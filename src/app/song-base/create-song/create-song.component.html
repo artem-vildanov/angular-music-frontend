@@ -1,0 +1,19 @@
+<form [formGroup]="createSongForm" (ngSubmit)="onSubmit()">
+    <div>
+        <label for="name">Title:</label>
+        <input id="name" formControlName="name">
+        <div *ngIf="checkSongNameInvalid()">
+            Title is required
+        </div>
+    </div>
+
+    <div>
+        <label for="music">Upload Audio:</label>
+        <input id="music" type="file" (change)="onFileChange($event)">
+        <div *ngIf="checkSongFileInvalid()">
+            Audio file is required
+        </div>
+    </div>
+
+    <button type="submit" [disabled]="createSongForm.invalid">Submit</button>
+</form>
