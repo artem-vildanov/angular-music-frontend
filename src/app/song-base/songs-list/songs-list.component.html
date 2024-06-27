@@ -1,28 +1,41 @@
-<ul class="list-group" *ngIf="getSongs(); else loading">
-    <li *ngFor="let song of getSongs()"
-        class=
-            "list-group-item
-            d-flex
-            flex-row
-            justify-content-center
-            gap-3
-            p-3"
-        style="width: fit-content">
-        <div class="image-container rounded-3">
-            <img [src]="song.photoPath" />
-        </div>
-        <div class="d-flex flex-column">
-            <h5 class="mb-1">
-                {{song.name}}
-            </h5>
-            <audio
-                class="my-2"
-                controls
-                [src]="song.musicPath">
-            </audio>
-        </div>
-    </li>
-</ul>
+<div class="card">
+    <div class="card-header">
+        Album songs
+    </div>
+    <ng-container *ngIf="getSongs() as songs; else loading">
+        <ng-container *appShowIfEmpty="{ condition: songs, templateToShow: empty }">
+            <ul class="list-group list-group-flush" >
+                <li *ngFor="let song of songs"
+                    class="list-group-item d-flex flex-row justify-content-center align-items-center gap-3 p-3"
+                    style="width: fit-content">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="selectSong"
+                            [id]="song.id"
+                            (change)="onSelectSong(song.id)" />
+                    </div>
+                    <div class="image-container rounded-3">
+                        <img [src]="song.photoPath" />
+                    </div>
+                    <div class="d-flex flex-column">
+                        <h5 class="mb-1">
+                            {{song.name}}
+                        </h5>
+                        <audio
+                            class="my-2"
+                            controls
+                            [src]="song.musicPath"></audio>
+                    </div>
+                </li>
+            </ul>
+        </ng-container>
+    </ng-container>
+</div>
 <ng-template #loading>
-    <p>Loading...</p>
+    <h5 class="card-body">Loading...</h5>
+</ng-template>
+<ng-template #empty>
+    <h5 class="card-body">There is nothing yet.</h5>
 </ng-template>

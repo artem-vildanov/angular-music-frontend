@@ -5,11 +5,18 @@ import { SongService } from '../services/song.service';
 import { provideHttpClient } from '@angular/common/http';
 import { CreateSongComponent } from './create-song/create-song.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import { SongDetailComponent } from './song-detail/song-detail.component';
+import {ShowIfEmptyDirective} from "../directives/show-if-empty.directive";
 
 @NgModule({
-    declarations: [SongsListComponent, CreateSongComponent],
+    declarations: [
+        SongsListComponent,
+        CreateSongComponent,
+        SongDetailComponent,
+        ShowIfEmptyDirective
+    ],
     imports: [CommonModule, NgFor, ReactiveFormsModule],
     providers: [SongService, provideHttpClient()],
-    exports: [SongsListComponent, CreateSongComponent],
+    exports: [SongsListComponent, CreateSongComponent, SongDetailComponent],
 })
 export class SongBaseModule {}

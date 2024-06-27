@@ -1,0 +1,29 @@
+<div class="card">
+    <div class="card-header">
+        Song details
+    </div>
+    <div [ngSwitch]="status">
+        <div *ngSwitchCase="SongDetailStatus.initial">
+            <h5 class="card-body">Select song from list</h5>
+        </div>
+        <div *ngSwitchCase="SongDetailStatus.loading">
+            <h5 class="card-body">Loading...</h5>
+        </div>
+        <div *ngSwitchCase="SongDetailStatus.loaded">
+            <div *ngIf="song as song">
+                <div class="big-image-container p-3">
+                    <img class="rounded-3" [src]="song.photoPath" />
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3">{{ song.name }}</h4>
+                    <p class="mb-1">{{ song.artistName }}</p>
+                    <div class="d-flex flex-row justify-content-between mb-3">
+                        <small class="text-secondary">{{ song.albumName }}</small>
+                        <small class="text-secondary">likes: {{ song.likes }}</small>
+                    </div>
+                    <button class="btn btn-primary mb-3">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

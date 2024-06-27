@@ -25,5 +25,10 @@ export class SongsListComponent implements OnInit {
 
     public getSongs(): SongModel[] {
         return this.songs;
+        // return [];
+    }
+
+    public onSelectSong(songId: string): void {
+        this.songService.selectSong(songId);
     }
 }
