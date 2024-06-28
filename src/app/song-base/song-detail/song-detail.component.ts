@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import ExtendedSongModel from "../../models/ExtendedSongModel";
-import {SongService} from "../../services/song.service";
-import SongDetailStatus from "../../enums/SongDetailStatus";
+import ExtendedSongModel from "../../_models/ExtendedSongModel";
+import {SongApiService} from "../../_services/song/song-api.service";
+import SongDetailStatus from "../../_enums/SongDetailStatus";
+import {SongStateService} from "../../_services/song/song-state.service";
 
 @Component({
   selector: 'app-song-detail',
@@ -12,10 +13,13 @@ export class SongDetailComponent implements OnInit {
     private _song: ExtendedSongModel|null = null;
     public status: SongDetailStatus = SongDetailStatus.initial;
 
-    constructor(private readonly songService: SongService) {}
+    constructor(
+        private readonly songApiService: SongApiService,
+        private readonly songStateService: SongStateService,
+    ) {}
 
     ngOnInit() {
-        this.songService
+        this.songStateService
             .selectedSong$
             .subscribe(this.changeSong);
     }
@@ -23,7 +27,7 @@ export class SongDetailComponent implements OnInit {
     private changeSong = (songId: string|null): void => {
         if (songId) {
             this.status = SongDetailStatus.loading;
-            this.songService
+            this.songApiService
                 .getSong(songId)
                 .subscribe(this.setSong);
         }

@@ -1,0 +1,37 @@
+<form class="card" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="card-header">
+        Login in your account
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label" for="email">Email:</label>
+            <input
+                class="form-control"
+                id="email"
+                formControlName="email"
+                aria-describedby="emailEmpty"
+                type="email" />
+            <div class="form-text" id="emailEmpty" *ngIf="checkEmailInvalid()">
+                Email is required
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">Password:</label>
+            <input
+                class="form-control"
+                id="password"
+                formControlName="password"
+                aria-describedby="passwordEmpty"
+                type="password" />
+            <div class="form-text" id="passwordEmpty" *ngIf="checkPasswordInvalid()">
+                Password is required
+            </div>
+        </div>
+
+        <button
+            class="btn btn-primary mb-3"
+            type="submit"
+            [disabled]="loginForm.invalid">Submit</button>
+    </div>
+</form>

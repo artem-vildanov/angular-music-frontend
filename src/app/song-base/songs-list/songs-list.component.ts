@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { SongService } from '../../services/song.service';
-import SongModel from '../../models/SongModel';
+import { SongApiService } from '../../_services/song/song-api.service';
+import SongModel from '../../_models/SongModel';
+import {SongStateService} from "../../_services/song/song-state.service";
 
 @Component({
     selector: 'app-songs-list',
@@ -10,11 +11,12 @@ import SongModel from '../../models/SongModel';
 export class SongsListComponent implements OnInit {
     private songs!: SongModel[];
     constructor(
-        private readonly songService: SongService,
+        private readonly songApiService: SongApiService,
+        private readonly songStateService: SongStateService
     ) {}
 
     ngOnInit(): void {
-        this.songService
+        this.songApiService
             .getAlbumSongs()
             .subscribe(this.setSongs);
     }
@@ -29,6 +31,6 @@ export class SongsListComponent implements OnInit {
     }
 
     public onSelectSong(songId: string): void {
-        this.songService.selectSong(songId);
+        this.songStateService.selectSong(songId);
     }
 }

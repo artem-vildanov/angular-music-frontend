@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {SongService} from "../../services/song.service";
+import {SongApiService} from "../../_services/song/song-api.service";
 
 @Component({
   selector: 'app-create-song',
@@ -11,7 +11,7 @@ export class CreateSongComponent {
     public createSongForm: FormGroup;
     constructor(
         private readonly formBuilder: FormBuilder,
-        private readonly songService: SongService
+        private readonly songService: SongApiService
     ) {
         this.createSongForm = this.makeCreateSongForm();
     }
