@@ -49,7 +49,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             throwError(() => refreshError);
 
         return this.authService
-            .refreshTokenWithAuthHeader(this.getAuthHeader())
+            .refreshToken(this.getAuthHeader())
             .pipe(
                 switchMap(retryRequestHandler),
                 catchError(errorHandler)

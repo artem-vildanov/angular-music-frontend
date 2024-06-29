@@ -7,7 +7,7 @@ import { CreateSongComponent } from './create-song/create-song.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import { SongDetailComponent } from './song-detail/song-detail.component';
 import {ShowIfEmptyDirective} from "../_directives/show-if-empty.directive";
-import {SongBaseComponent} from "./song-base.component";
+import {SongBaseComponent} from "./song-base/song-base.component";
 
 @NgModule({
     declarations: [
@@ -20,4 +20,4 @@ import {SongBaseComponent} from "./song-base.component";
     imports: [CommonModule, NgFor, ReactiveFormsModule],
     exports: [SongBaseComponent],
 })
-export class SongBaseModule {}
+export class SongModule {}

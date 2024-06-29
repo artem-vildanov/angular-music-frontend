@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../../enviroments/enviroment";
-import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {catchError, finalize, map, Observable, shareReplay, throwError} from "rxjs";
 import {TokenModel} from "../../_models/TokenModel";
 
 @Injectable({
@@ -9,6 +9,7 @@ import {TokenModel} from "../../_models/TokenModel";
 })
 export class AuthApiService {
     private readonly baseUrl: string;
+    private refreshRequest$: Observable<TokenModel>|null = null;
     constructor(private readonly http: HttpClient) {
         this.baseUrl = `${environment.apiUrl}/auth`;
     }
@@ -18,13 +19,29 @@ export class AuthApiService {
         return this.http.post<TokenModel>(url, credentials);
     }
 
-    public refreshToken(): Observable<TokenModel> {
-        const url = `${this.baseUrl}/refresh`;
-        return this.http.get<TokenModel>(url);
+    public refreshToken(options: object = {}): Observable<TokenModel> {
+        if (this.refreshRequest$) {
+            return this.refreshRequest$;
+        }
+        this.refreshRequest$ = this.createRefreshTokenRequest(options);
+        return this.refreshRequest$;
     }
 
-    public refreshTokenWithAuthHeader(options: object): Observable<TokenModel> {
+    private createRefreshTokenRequest(options: object): Observable<TokenModel> {
+        const handleRefreshError = (error: HttpErrorResponse): Observable<never> => {
+            this.refreshRequest$ = null;
+            return throwError(() => error);
+        }
+
+        const resetRefreshRequest = () => this.refreshRequest$ = null;
+
         const url = `${this.baseUrl}/refresh`;
-        return this.http.get<TokenModel>(url, options);
+        return this.http
+            .get<TokenModel>(url, options)
+            .pipe(
+                shareReplay(1),
+                catchError(handleRefreshError),
+                finalize(resetRefreshRequest)
+            );
     }
 }
