@@ -3,13 +3,21 @@ import {environment} from "../../../enviroments/enviroment";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {catchError, finalize, map, Observable, shareReplay, throwError} from "rxjs";
 import {TokenModel} from "../../_models/TokenModel";
+import {AccountModel} from "../../_models/AccountModel";
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthApiService {
     private readonly baseUrl: string;
+
+    /**
+     * Флаговая переменная для предотвращения гонки запросов ради обновления токена.
+     * Хранит observable первого отправленного запроса на обновление токена.
+     * Остальные запросы на обновление будут подписываться на этот observable.
+     */
     private refreshRequest$: Observable<TokenModel>|null = null;
+
     constructor(private readonly http: HttpClient) {
         this.baseUrl = `${environment.apiUrl}/auth`;
     }
@@ -43,5 +51,10 @@ export class AuthApiService {
                 catchError(handleRefreshError),
                 finalize(resetRefreshRequest)
             );
+    }
+
+    public getAccountInfo(): Observable<AccountModel> {
+        const url = `${this.baseUrl}/me`;
+        return this.http.get<AccountModel>(url);
     }
 }

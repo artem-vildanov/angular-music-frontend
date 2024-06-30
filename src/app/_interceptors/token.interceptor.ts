@@ -13,6 +13,7 @@ export class TokenInterceptor implements HttpInterceptor {
     }
     private isExcludedRoute = (request: HttpRequest<any>): boolean => {
         const excludedRoutes = [
+            '/public',
             '/login',
             '/refresh',
         ];

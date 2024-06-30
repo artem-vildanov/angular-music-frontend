@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
     providedIn: 'root'
 })
 export class SongStateService {
     private selectedSongSource = new BehaviorSubject<string|null>(null);
-    selectedSong$ = this.selectedSongSource.asObservable();
-    public selectSong(songId: string): void {
+    private _selectedSong$ = this.selectedSongSource.asObservable();
+    set selectedSong$(songId: string) {
         this.selectedSongSource.next(songId);
+    }
+
+    get selectedSong$(): Observable<string|null> {
+        return this._selectedSong$;
     }
 }

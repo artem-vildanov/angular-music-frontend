@@ -1,7 +1,13 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthApiService} from "../../_services/auth/auth-api.service";
 import {TokenModel} from "../../_models/TokenModel";
+import {Router} from "@angular/router";
+import {AuthStateService} from "../../_services/auth/auth-state.service";
+import {AccountModel} from "../../_models/AccountModel";
+import {concatMap, Observable, tap} from "rxjs";
+import LoadingStatus from "../../_enums/LoadingStatus";
+import {AuthStateStatus} from "../../_enums/AuthStateStatus";
 
 @Component({
   selector: 'app-login',
@@ -9,12 +15,16 @@ import {TokenModel} from "../../_models/TokenModel";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+    loginStatus: LoadingStatus;
     loginForm: FormGroup;
     constructor(
         private readonly formBuilder: FormBuilder,
-        private readonly authService: AuthApiService
+        private readonly authApiService: AuthApiService,
+        private readonly authStateService: AuthStateService,
+        private readonly router: Router
     ) {
         this.loginForm = this.makeLoginForm();
+        this.loginStatus = LoadingStatus.initial;
     }
 
     private makeLoginForm(): FormGroup {
@@ -26,10 +36,25 @@ export class LoginComponent {
     }
 
     public onSubmit(): void {
+
+        const saveTokenToStorage = (token: TokenModel) => localStorage.setItem('token', token.token);
+        const getAccountInfo = (): Observable<AccountModel> => this.authApiService.getAccountInfo();
+        const setAccountState = (accountInfo: AccountModel) => {
+            this.authStateService.accountInfo = accountInfo;
+            this.authStateService.authState = AuthStateStatus.authenticated;
+        }
+        const redirectToHome = () => this.router.navigate(['/home']);
+
         const formData = this.makeFormData();
-        this.authService
+        this.loginStatus = LoadingStatus.loading;
+        this.authApiService
             .login(formData)
-            .subscribe(this.setTokenToStorage);
+            .pipe(
+                tap(saveTokenToStorage),
+                concatMap(getAccountInfo),
+                tap(setAccountState),
+            )
+            .subscribe(redirectToHome);
     }
 
     private makeFormData(): FormData {
@@ -39,10 +64,6 @@ export class LoginComponent {
         formData.append('email', email);
         formData.append('password', password);
         return formData;
-    }
-
-    private setTokenToStorage = (tokenModel: TokenModel): void => {
-        localStorage.setItem('token', tokenModel.token);
     }
 
     public checkEmailInvalid(): boolean {
@@ -58,4 +79,6 @@ export class LoginComponent {
         const passwordIsTouched = password.touched;
         return passwordIsInvalid && passwordIsTouched;
     }
+
+    protected readonly LoadingStatus = LoadingStatus;
 }

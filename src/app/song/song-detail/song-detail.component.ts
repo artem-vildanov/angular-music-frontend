@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import ExtendedSongModel from "../../_models/ExtendedSongModel";
 import {SongApiService} from "../../_services/song/song-api.service";
-import SongDetailStatus from "../../_enums/SongDetailStatus";
 import {SongStateService} from "../../_services/song/song-state.service";
+import LoadingStatus from "../../_enums/LoadingStatus";
 
 @Component({
   selector: 'app-song-detail',
@@ -11,7 +11,7 @@ import {SongStateService} from "../../_services/song/song-state.service";
 })
 export class SongDetailComponent implements OnInit {
     private _song: ExtendedSongModel|null = null;
-    public status: SongDetailStatus = SongDetailStatus.initial;
+    public status: LoadingStatus = LoadingStatus.initial;
 
     constructor(
         private readonly songApiService: SongApiService,
@@ -26,7 +26,7 @@ export class SongDetailComponent implements OnInit {
 
     private changeSong = (songId: string|null): void => {
         if (songId) {
-            this.status = SongDetailStatus.loading;
+            this.status = LoadingStatus.loading;
             this.songApiService
                 .getSong(songId)
                 .subscribe(this.setSong);
@@ -35,12 +35,12 @@ export class SongDetailComponent implements OnInit {
 
     private setSong = (newSong: ExtendedSongModel): void => {
         this._song = newSong;
-        this.status = SongDetailStatus.loaded;
+        this.status = LoadingStatus.loaded;
     }
 
     get song(): ExtendedSongModel|null {
         return this._song;
     }
 
-    protected readonly SongDetailStatus = SongDetailStatus;
+    protected readonly SongDetailStatus = LoadingStatus;
 }

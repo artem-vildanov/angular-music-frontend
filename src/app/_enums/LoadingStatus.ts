@@ -1,6 +1,6 @@
-enum SongDetailStatus {
+enum LoadingStatus {
     initial = 'initial',
     loading = 'loading',
     loaded = 'loaded'
 }
-export default SongDetailStatus;
+export default LoadingStatus;

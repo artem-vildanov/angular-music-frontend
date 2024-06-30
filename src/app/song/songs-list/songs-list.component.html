@@ -1,4 +1,5 @@
 <div class="card">
+
     <div class="card-header">
         Album songs
     </div>
@@ -34,7 +35,13 @@
     </ng-container>
 </div>
 <ng-template #loading>
-    <h5 class="card-body">Loading...</h5>
+    <div class="card-body songs-list-overlay">
+        <div class="loading-overlay">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 </ng-template>
 <ng-template #empty>
     <h5 class="card-body">There is nothing yet.</h5>

@@ -26,6 +26,6 @@ export class SongsListComponent implements OnInit {
     }
 
     public onSelectSong(songId: string): void {
-        this.songStateService.selectSong(songId);
+        this.songStateService.selectedSong$ = songId;
     }
 }
