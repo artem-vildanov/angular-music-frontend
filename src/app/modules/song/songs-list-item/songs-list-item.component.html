@@ -1,0 +1,23 @@
+<li class="d-flex flex-row justify-content-center align-items-center gap-3 p-3"
+    style="width: fit-content">
+    <div class="form-check">
+        <input
+            class="form-check-input"
+            type="radio"
+            name="selectSong"
+            [id]="song.id"
+            (change)="onSelectSong(song.id)" />
+    </div>
+    <div class="image-container rounded-3">
+        <img [src]="song.photoPath" />
+    </div>
+    <div class="d-flex flex-column">
+        <h5 class="mb-1">
+            {{song.name}}
+        </h5>
+        <audio
+            class="my-2"
+            controls
+            [src]="song.musicPath"></audio>
+    </div>
+</li>

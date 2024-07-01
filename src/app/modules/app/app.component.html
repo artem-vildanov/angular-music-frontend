@@ -1,0 +1,27 @@
+<nav class="navbar border-bottom ">
+    <div class="container justify-content-center">
+        <div *ngIf="authStateIsLoading" class="navbar-overlay">
+            <app-loading-spinner></app-loading-spinner>
+        </div>
+        <ul class="nav nav-underline">
+            <li class="nav-item" *ngIf="authStateIsAuthenticated">
+                <a class="nav-link text-black" routerLink="/home">Home</a>
+            </li>
+            <li class="nav-item" *ngIf="authStateIsUnauthorized">
+                <a class="nav-link text-black" routerLink="/public">Public</a>
+            </li>
+            <li class="nav-item" *ngIf="authStateIsUnauthorized">
+                <a class="nav-link text-black" routerLink="/auth">Login</a>
+            </li>
+            <li class="nav-item" *ngIf="authStateIsAuthenticated">
+                <a class="nav-link text-black" routerLink="/songs">Songs</a>
+            </li>
+            <li class="nav-item" *ngIf="authStateIsAuthenticated">
+                <a class="nav-link text-black" (click)="logout()" >Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="p-5 d-flex justify-content-center">
+    <router-outlet></router-outlet>
+</div>
