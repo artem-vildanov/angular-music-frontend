@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {SongApiService} from "../../../services/song/song-api.service";
 import LoadingStatus from "../../../enums/LoadingStatus";
-import {map, Observable} from "rxjs";
-import ExtendedSongModel from "../../../models/ExtendedSongModel";
-import {SongStateService} from "../../../services/song/song-state.service";
+import {ICreateSongForm} from "../../../interfaces/ICreateSongForm";
+import {EntityNameValidator} from "../../../validators/entity-name.validator";
+import {AudioFileValidator} from "../../../validators/audio-file.validator";
 
 @Component({
   selector: 'app-create-song',
@@ -13,11 +13,11 @@ import {SongStateService} from "../../../services/song/song-state.service";
 })
 export class CreateSongComponent {
     public createSongForm: FormGroup;
-    public createRequestStatus: LoadingStatus = LoadingStatus.initial;
+    public _status = LoadingStatus.initial;
     constructor(
-        private readonly formBuilder: FormBuilder,
         private readonly songApiService: SongApiService,
-        private readonly songStateService: SongStateService
+        private readonly songNameValidator: EntityNameValidator,
+        private readonly audioFileValidator: AudioFileValidator
     ) {
         this.createSongForm = this.makeCreateSongForm();
     }
@@ -36,13 +36,35 @@ export class CreateSongComponent {
         });
         */
 
-    private makeCreateSongForm(): FormGroup {
+    /**
+    private _makeCreateSongForm(): FormGroup {
         const fields: object = { // сделать ICreateSongForm - интерфейс формы
             name: ['', Validators.required], // использовать FormControl
             music: [null, Validators.required]
         }; // сделать свой валидатор, чтобы имя с большой буквы и не менее 5 символов; песня не более 10 мб
         return this.formBuilder.group(fields);
     } // типы валидации, момент валидации onChange, blur, submit
+    */
+
+    private makeCreateSongForm(): FormGroup<ICreateSongForm> {
+        const nameField = new FormControl<string>('', {
+            validators: this.songNameValidator.getValidator(),
+            updateOn: 'blur',
+            nonNullable: true
+        });
+        const audioField = new FormControl<File|null>(null, {
+            validators: this.audioFileValidator.getValidator(),
+            updateOn: undefined,
+            nonNullable: false
+        })
+        const form = new FormGroup<ICreateSongForm>({
+            name: nameField,
+            music: audioField
+        });
+        form.markAsPristine();
+        form.markAsUntouched();
+        return form;
+    }
 
     public onFileChange(event: Event): void {
         const target: HTMLInputElement = event.target as HTMLInputElement;
@@ -53,19 +75,18 @@ export class CreateSongComponent {
     private addSongToForm(file: File): void {
         const value: object = { music: file }
         this.createSongForm.patchValue(value); // setValue - вся форма изменение, pathValue - изменение одного поля
-        this.createSongForm.get('music')?.updateValueAndValidity();
+        const audioControl = this.createSongForm.get('music')!;
+        audioControl.markAsTouched();
+        audioControl.updateValueAndValidity();
     }
 
     public onSubmit(): void {
+        const setStatusLoaded = () => this._status = LoadingStatus.loaded;
         const formData: FormData = this.makeFormData();
+        this._status = LoadingStatus.loading;
         this.songApiService
-            .createSong(formData) // сделать рут сервис для генерации ивента создания песни и получения по айди
-            .subscribe(response => console.log(response));
-            // .pipe(
-            //     switchMap(this.getCreatedSong),
-            //     map(), // мапить
-            //     tap() // поместить в
-            // )
+            .createSong(formData)
+            .subscribe(setStatusLoaded);
     }
 
     private makeFormData(): FormData {
@@ -75,10 +96,6 @@ export class CreateSongComponent {
         formData.append('name', songName);
         formData.append('music', songFile);
         return formData;
-    }
-
-    private getCreatedSong = (songId: string): Observable<ExtendedSongModel> => {
-        return this.songApiService.getSong(songId);
     }
 
     public checkSongNameInvalid(): boolean {
@@ -92,4 +109,20 @@ export class CreateSongComponent {
         const fileIsTouched: boolean = this.createSongForm.get('music')!.touched;
         return fileIsInvalid && fileIsTouched;
     }
+
+    get status(): LoadingStatus {
+        return this._status;
+    }
+
+    public setStatusInitial($event: Event): void {
+        $event.preventDefault();
+        this._status = LoadingStatus.initial;
+        this.clearForm();
+    }
+
+    private clearForm(): void {
+        this.createSongForm.reset();
+    }
+
+    protected readonly LoadingStatus = LoadingStatus;
 }

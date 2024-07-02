@@ -1,7 +1,7 @@
 import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
 
 export abstract class BaseValidator {
-    public validate(): ValidatorFn {
+    public getValidator(): ValidatorFn {
         return this.validateFormControl;
     }
 

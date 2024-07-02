@@ -1,30 +1,54 @@
-<form class="card" [formGroup]="createSongForm" (ngSubmit)="onSubmit()">
+<form class="card" >
     <div class="card-header">
         Create song
     </div>
     <div class="card-body">
-        <div class="mb-3">
-            <label class="form-label" for="songName">Title:</label>
-            <input class="form-control"
-                   id="songName"
-                   formControlName="name"
-                   aria-describedby="songNameInvalid">
-            <div class="form-text" id="songNameInvalid" *ngIf="checkSongNameInvalid()">
-                Title is required
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label" for="songFile">Upload Audio:</label>
-            <input class="form-control"
-                   id="songFile"
-                   type="file"
-                   (change)="onFileChange($event)">
-            <div *ngIf="checkSongFileInvalid()">
-                Audio file is required
-            </div>
-        </div>
-        <button class="btn btn-primary"
-                type="submit"
-                [disabled]="createSongForm.invalid">Submit</button>
+        <ng-container [ngSwitch]="status">
+            <ng-container *ngSwitchCase="LoadingStatus.initial">
+                <form [formGroup]="createSongForm" (ngSubmit)="onSubmit()">
+                    <div class="mb-3">
+                        <label class="form-label" for="songName">Title:</label>
+                        <input class="form-control"
+                               id="songName"
+                               formControlName="name"
+                               aria-describedby="songNameInvalid">
+                        <div class="form-text" id="songNameInvalid" *ngIf="checkSongNameInvalid()">
+                            Title is invalid. Minimum length is 5 symbols
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="songFile">Upload Audio:</label>
+                        <input class="form-control"
+                               id="songFile"
+                               type="file"
+                               aria-describedby="audioFileInvalid"
+                               (change)="onFileChange($event)">
+                        <div class="form-text" id="audioFileInvalid" *ngIf="checkSongFileInvalid()">
+                            Audio file is invalid. Max size is 10 Mb
+                        </div>
+                    </div>
+                    <button class="btn btn-primary"
+                            type="submit"
+                            [disabled]="createSongForm.invalid">Submit</button>
+                </form>
+            </ng-container>
+            <ng-container *ngSwitchCase="LoadingStatus.loading">
+                <div class="create-song-overlay">
+                    <app-loading-spinner></app-loading-spinner>
+                </div>
+            </ng-container>
+            <ng-container *ngSwitchCase="LoadingStatus.loaded">
+                <div class="create-song-overlay d-flex flex-column gap-3 align-items-center justify-content-center">
+                    <div style="text-align: center;">
+                        Song successfully created,<br>
+                        would like to create another one?
+                    </div>
+                    <div class="btn btn-primary"
+                        (click)="setStatusInitial($event)">
+                        Submit
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
     </div>
 </form>

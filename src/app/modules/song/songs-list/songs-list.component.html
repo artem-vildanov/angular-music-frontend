@@ -2,22 +2,24 @@
     <div class="card-header">
         Album songs
     </div>
-    <ng-container *ngIf="songs | async as songsList; else loading">
-        <ng-container *appShowIfEmpty="{ condition: songsList, templateToShow: empty }">
+    <ng-container [ngSwitch]="status">
+        <ng-container *ngSwitchCase="LoadingStatus.loading">
+            <div class="card-body songs-list-overlay">
+                <app-loading-spinner></app-loading-spinner>
+            </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="LoadingStatus.loaded">
+            <div *ngIf="songs.length === 0">
+                <h5 class="card-body songs-list-overlay">
+                    There is nothing yet.
+                </h5>
+            </div>
             <ul class="list-group list-group-flush" >
                 <app-songs-list-item class="list-group-item"
-                                     *ngFor="let song of songsList"
+                                     *ngFor="let song of songs"
                                      [song]="song">
                 </app-songs-list-item>
             </ul>
         </ng-container>
     </ng-container>
 </div>
-<ng-template #loading >
-    <div class="card-body songs-list-overlay">
-        <app-loading-spinner></app-loading-spinner>
-    </div>
-</ng-template>
-<ng-template #empty>
-    <h5 class="card-body">There is nothing yet.</h5>
-</ng-template>

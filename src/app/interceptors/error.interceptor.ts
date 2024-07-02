@@ -31,11 +31,25 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (this.tokenIsExpired(error)) {
             return this.refreshToken(req, next);
         }
-        return throwError(() => error);
+        return this.handleInvalidToken(error);
     }
 
     private tokenIsExpired(error: HttpErrorResponse): boolean {
         return (error.status === 403 && error.error.message === 'token expired');
+    }
+
+    private handleInvalidToken(error: HttpErrorResponse): Observable<never> {
+        const invalidTokenMessages = [
+            'token expired, not refreshable',
+            'invalid token',
+            'no token provided in request header'
+        ];
+        const errorMessage = error.error.message;
+        if (invalidTokenMessages.includes(errorMessage)) {
+            this.removeTokenFromStorage();
+        }
+
+        return throwError(() => error);
     }
 
     private refreshToken(
@@ -76,5 +90,9 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     private setRefreshedToken = (responseToken: TokenModel): void => {
         localStorage.setItem('token', responseToken.token);
+    }
+
+    private removeTokenFromStorage(): void {
+        localStorage.removeItem('token');
     }
 }

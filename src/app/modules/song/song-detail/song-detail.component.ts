@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import ExtendedSongModel from "../../models/ExtendedSongModel";
-import {SongApiService} from "../../services/song/song-api.service";
-import {SongStateService} from "../../services/song/song-state.service";
-import LoadingStatus from "../../enums/LoadingStatus";
+import ExtendedSongModel from "../../../models/ExtendedSongModel";
+import LoadingStatus from "../../../enums/LoadingStatus";
+import {SongApiService} from "../../../services/song/song-api.service";
+import {SongStateService} from "../../../services/song/song-state.service";
 
 @Component({
   selector: 'app-song-detail',

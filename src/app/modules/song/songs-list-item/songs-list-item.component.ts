@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {SongStateService} from "../../services/song/song-state.service";
-import SongModel from "../../models/SongModel";
+import SongModel from "../../../models/SongModel";
+import {SongStateService} from "../../../services/song/song-state.service";
 
 @Component({
     selector: 'app-songs-list-item',

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {SongBaseComponent} from "../../song/song-base/song-base.component";
+import {SongBaseComponent} from "../song/song-base/song-base.component";
 import {LoginComponent} from "../auth/login/login.component";
 import {PublicBaseComponent} from "../public/public-base/public-base.component";
 import {HomeBaseComponent} from "../home/home-base/home-base.component";

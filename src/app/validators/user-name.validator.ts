@@ -2,9 +2,7 @@ import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {BaseValidator} from "./base-validator";
 import {Injectable} from "@angular/core";
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class UserNameValidator extends BaseValidator {
     protected validateFormControl = (control: AbstractControl): ValidationErrors|null => {
         const userName = control.value as string;
@@ -30,7 +28,7 @@ export class UserNameValidator extends BaseValidator {
 
     private checkLength(name: string): boolean {
         const minimumNameLength = 5;
-        return name.length > 5;
+        return name.length >= minimumNameLength;
     }
 }
 
