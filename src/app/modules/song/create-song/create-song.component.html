@@ -1,18 +1,19 @@
-<form class="card" >
+<!--
+<form class="card create-song" >
     <div class="card-header">
         Create song
     </div>
     <div class="card-body">
         <ng-container [ngSwitch]="status">
             <ng-container *ngSwitchCase="LoadingStatus.initial">
-                <form [formGroup]="createSongForm" (ngSubmit)="onSubmit()">
+                <form [formGroup]="form" (ngSubmit)="onSubmit()">
                     <div class="mb-3">
                         <label class="form-label" for="songName">Title:</label>
                         <input class="form-control"
                                id="songName"
                                formControlName="name"
                                aria-describedby="songNameInvalid">
-                        <div class="form-text" id="songNameInvalid" *ngIf="checkSongNameInvalid()">
+                        <div class="form-text" id="songNameInvalid" *ngIf="checkSongNameInvalid">
                             Title is invalid. Minimum length is 5 symbols
                         </div>
                     </div>
@@ -23,22 +24,20 @@
                                type="file"
                                aria-describedby="audioFileInvalid"
                                (change)="onFileChange($event)">
-                        <div class="form-text" id="audioFileInvalid" *ngIf="checkSongFileInvalid()">
+                        <div class="form-text" id="audioFileInvalid" *ngIf="checkSongFileInvalid">
                             Audio file is invalid. Max size is 10 Mb
                         </div>
                     </div>
                     <button class="btn btn-primary"
                             type="submit"
-                            [disabled]="createSongForm.invalid">Submit</button>
+                            [disabled]="checkFormInvalid">Submit</button>
                 </form>
             </ng-container>
             <ng-container *ngSwitchCase="LoadingStatus.loading">
-                <div class="create-song-overlay">
                     <app-loading-spinner></app-loading-spinner>
-                </div>
             </ng-container>
             <ng-container *ngSwitchCase="LoadingStatus.loaded">
-                <div class="create-song-overlay d-flex flex-column gap-3 align-items-center justify-content-center">
+                <div class="d-flex flex-column gap-3 align-items-center justify-content-center">
                     <div style="text-align: center;">
                         Song successfully created,<br>
                         would like to create another one?
@@ -52,3 +51,5 @@
         </ng-container>
     </div>
 </form>
+-->
+<div>create song component</div>

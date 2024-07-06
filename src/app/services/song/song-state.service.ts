@@ -4,6 +4,7 @@ import SongModel from "../../models/SongModel";
 import {SongApiService} from "./song-api.service";
 import {EventService} from "../event.service";
 import LoadingStatus from "../../enums/LoadingStatus";
+import ExtendedSongModel from "../../models/ExtendedSongModel";
 
 @Injectable({
     providedIn: 'root'
@@ -20,18 +21,25 @@ export class SongStateService {
 
     private updateSongsList = (): void => {
         const setSongsList = (songs: SongModel[]) => this.songsList = songs;
-        const removeSelectedSong = () => this.selectedSongSource.next(null);
         const setLoadedStatus = () => this.songsListStatus = LoadingStatus.loaded;
 
-        this.songsListStatus = LoadingStatus.loading; // перед запросом ставим статус loading
+        this.setLoadingStatus();
+        this.removeSelectedSong();
         this.songApiService
             .getAlbumSongs()
             .pipe(
                 tap(setSongsList), // обновляем состояние и помещаем в него загруженные песни
-                tap(removeSelectedSong), // убираем выделенную песню
                 tap(setLoadedStatus) // после запроса ставим статус loaded
             )
             .subscribe();
+    }
+
+    private setLoadingStatus(): void {
+        this.songsListStatus = LoadingStatus.loading;
+    }
+
+    private removeSelectedSong(): void {
+        this.selectedSongSource.next(null);
     }
 
     /**
@@ -60,20 +68,43 @@ export class SongStateService {
         return this._songsList$;
     }
 
-    public loadAlbumSongs(): void {
+    public loadSongsList(): void {
         this.updateSongsList();
     }
 
     /**
-     * Айди выбранной песни
+     * Выбранная песня
      */
-    private selectedSongSource = new BehaviorSubject<string|null>(null);
-    private _selectedSong$ = this.selectedSongSource.asObservable();
-    set selectedSong(songId: string) {
-        this.selectedSongSource.next(songId);
+    private selectedSongSource = new BehaviorSubject<ExtendedSongModel|null>(null);
+    private _selectedSong$ = new Observable<ExtendedSongModel>;
+    set selectedSong(selectedSongId: string) {
+        const setSong = (song: ExtendedSongModel) => this.selectedSongSource.next(song);
+        const setLoadedStatus = () => this.selectedSongStatusSource.next(LoadingStatus.loaded);
+
+        this.selectedSongStatus = LoadingStatus.loading;
+        this.songApiService
+            .getSong(selectedSongId)
+            .pipe(
+                tap(setSong),
+                tap(setLoadedStatus)
+            )
+            .subscribe();
     }
 
-    get selectedSong$(): Observable<string|null> {
+    get selectedSong$(): Observable<ExtendedSongModel|null> {
         return this._selectedSong$;
+    }
+
+    /**
+     * Состояние загрузки выбранной песни
+     */
+    private selectedSongStatusSource = new BehaviorSubject<LoadingStatus>(LoadingStatus.initial);
+    private _selectedSongStatus$ = this.selectedSongStatusSource.asObservable();
+    set selectedSongStatus(status: LoadingStatus) {
+        this.selectedSongStatusSource.next(status);
+    }
+
+    get selectedSongStatus$(): Observable<LoadingStatus> {
+        return this._selectedSongStatus$;
     }
 }

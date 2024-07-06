@@ -32,7 +32,9 @@ export class SongApiService {
         const url: string = `${this.baseUrl}/create-song`;
         return this.http
             .post<string>(url, formData)
-            .pipe(tap(this.notifyEventService));
+            .pipe(
+                tap(this.notifyEventService)
+            );
     }
 
     public updateSongName(songId: string, formData: FormData): Observable<void> {
@@ -45,8 +47,12 @@ export class SongApiService {
         return this.http.post<void>(url, formData);
     }
 
-    public deleteSong(songId: number): Observable<void> {
+    public deleteSong(songId: string): Observable<void> {
         const url: string = `${this.baseUrl}/${songId}/delete-song`;
-        return this.http.delete<void>(url);
+        return this.http
+            .delete<void>(url)
+            .pipe(
+                tap(this.notifyEventService)
+            );
     }
 }

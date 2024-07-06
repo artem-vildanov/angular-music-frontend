@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SongModule } from '../song/song.module'
-import { ShowIfEmptyDirective } from '../../directives/show-if-empty.directive';
 import {AuthModule} from "../auth/auth.module";
 import {SongApiService} from "../../services/song/song-api.service";
 import {AuthApiService} from "../../services/auth/auth-api.service";
@@ -13,12 +12,11 @@ import {ErrorInterceptor} from "../../interceptors/error.interceptor";
 import {TokenInterceptor} from "../../interceptors/token.interceptor";
 import {
     HTTP_INTERCEPTORS,
-    HttpClient,
-    HttpClientModule,
     provideHttpClient,
     withInterceptorsFromDi
 } from "@angular/common/http";
 import {SpinnerModule} from "../spinner/spinner.module";
+import {MatDialogModule} from "@angular/material/dialog";
 
 const TokenInterceptorProvider = {
     provide: HTTP_INTERCEPTORS,
@@ -39,7 +37,8 @@ const ErrorInterceptorProvider = {
         AppRoutingModule,
         SongModule,
         AuthModule,
-        SpinnerModule
+        SpinnerModule,
+        MatDialogModule,
     ],
     providers: [
         SongApiService,
@@ -47,7 +46,7 @@ const ErrorInterceptorProvider = {
         SongStateService,
         TokenInterceptorProvider,
         ErrorInterceptorProvider,
-        provideHttpClient(withInterceptorsFromDi())
+        provideHttpClient(withInterceptorsFromDi()),
     ],
     bootstrap: [AppComponent],
 })

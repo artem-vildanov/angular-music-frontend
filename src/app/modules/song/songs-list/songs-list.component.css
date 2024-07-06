@@ -1,7 +1,18 @@
-
+/**
 .songs-list-overlay {
     width: 450px;
     height: 400px;
 }
 
+.card {
+    width: 300px;
+}
+ */
 
+.songs-list {
+    width: 460px;
+}
+
+.songs-list-overlay {
+    min-height: 740px;
+}

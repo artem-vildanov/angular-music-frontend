@@ -12,6 +12,6 @@ export class SongsListItemComponent {
     public song!: SongModel;
     constructor(private readonly songStateService: SongStateService) {}
     public onSelectSong(songId: string): void {
-        this.songStateService.selectedSong = songId;
+        this.songStateService.selectedSongId = songId;
     }
 }

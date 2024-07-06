@@ -3,6 +3,8 @@ import {Observable} from "rxjs";
 import SongModel from "../../../models/SongModel";
 import {SongStateService} from "../../../services/song/song-state.service";
 import LoadingStatus from "../../../enums/LoadingStatus";
+import {CreateSongPopupComponent} from "../../popup/create-song-popup/create-song-popup.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: 'app-songs-list',
@@ -12,12 +14,15 @@ import LoadingStatus from "../../../enums/LoadingStatus";
 export class SongsListComponent implements OnInit {
     private _songs: SongModel[] = [];
     public _status: LoadingStatus = LoadingStatus.initial;
-    constructor(private readonly songStateService: SongStateService) {}
+    constructor(
+        private readonly songStateService: SongStateService,
+        private readonly matDialog: MatDialog
+    ) {}
 
     ngOnInit(): void {
         this.subscribeOnSongsList();
         this.subscribeOnSongsListStatus();
-        this.songStateService.loadAlbumSongs();
+        this.songStateService.loadSongsList();
     }
 
     private subscribeOnSongsList(): void {
@@ -32,6 +37,11 @@ export class SongsListComponent implements OnInit {
         this.songStateService
             .songsListStatus$
             .subscribe(setSongsListStatus);
+    }
+
+    public openCreateSongModal($event: Event): void {
+        $event.preventDefault();
+        this.matDialog.open(CreateSongPopupComponent);
     }
 
     get songs(): SongModel[] {

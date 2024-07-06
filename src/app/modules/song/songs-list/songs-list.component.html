@@ -1,6 +1,7 @@
-<div class="card">
-    <div class="card-header">
-        Album songs
+<div class="card songs-list">
+    <div class="card-header d-flex flex-row justify-content-between align-items-center">
+        <div>Album songs</div>
+        <button class="btn btn-primary" (click)="openCreateSongModal($event)">Create new song</button>
     </div>
     <ng-container [ngSwitch]="status">
         <ng-container *ngSwitchCase="LoadingStatus.loading">
@@ -9,13 +10,13 @@
             </div>
         </ng-container>
         <ng-container *ngSwitchCase="LoadingStatus.loaded">
-            <div *ngIf="songs.length === 0">
-                <h5 class="card-body songs-list-overlay">
+            <ng-container *ngIf="songs.length === 0">
+                <div class="card-body songs-list-overlay">
                     There is nothing yet.
-                </h5>
-            </div>
+                </div>
+            </ng-container>
             <ul class="list-group list-group-flush" >
-                <app-songs-list-item class="list-group-item"
+                <app-songs-list-item class="list-group-item p-3"
                                      *ngFor="let song of songs"
                                      [song]="song">
                 </app-songs-list-item>

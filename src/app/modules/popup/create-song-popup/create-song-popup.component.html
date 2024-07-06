@@ -1,0 +1,32 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <div class="fw-semibold fs-4 mb-3">
+        Create song
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="songName">Title:</label>
+        <input class="form-control"
+               id="songName"
+               formControlName="name"
+               aria-describedby="songNameInvalid">
+        <div class="form-text" id="songNameInvalid" *ngIf="songNameIsInvalid">
+            Title is invalid. Minimum length is 5 symbols
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="songFile">Upload Audio:</label>
+        <input class="form-control"
+               id="songFile"
+               type="file"
+               (change)="onFileChange($event)"
+               aria-describedby="audioFileInvalid">
+        <div class="form-text" id="audioFileInvalid" *ngIf="songFileIsInvalid">
+            Audio file is invalid. Max size is 10 Mb
+        </div>
+    </div>
+    <button class="btn btn-primary"
+            type="submit"
+            [disabled]="formIsInvalid">
+        Submit</button>
+
+    <button class="btn btn-primary mx-2" (click)="onClose($event)">Close</button>
+</form>

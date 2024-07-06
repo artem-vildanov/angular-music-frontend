@@ -1,25 +1,26 @@
-import {Injectable} from "@angular/core";
-import {BaseValidator} from "./base-validator";
-import {AbstractControl, ValidationErrors} from "@angular/forms";
+import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
 
-@Injectable()
-export class EntityNameValidator extends BaseValidator {
-    protected validateFormControl = (control: AbstractControl): ValidationErrors | null => {
-        const entityName = control.value as string;
-        const error = {
-            entityName: {
-                name: entityName
-            }
-        }
+export function entityNameValidator(): ValidatorFn {
+    return validate;
+}
 
-        if (!this.checkNameLength(entityName))
-            return error;
+const validate = (control: AbstractControl): ValidationErrors | null => {
+    const entityName = control.value as string;
 
-        return null;
-    }
+    if (entityName === null)
+        return getError();
 
-    private checkNameLength(name: string): boolean {
-        const minimumNameLength = 5;
-        return name.length >= minimumNameLength;
-    }
+    if (nameIsInvalid(entityName))
+        return getError(entityName);
+
+    return null;
+}
+
+function nameIsInvalid(entityName: string): boolean {
+    const minimumNameLength = 5;
+    return entityName.length < minimumNameLength;
+}
+
+function getError(entityName: string = 'undefinedName'): ValidationErrors {
+    return { entityName: entityName };
 }
