@@ -1,23 +1,19 @@
-<li class="d-flex flex-row justify-content-center align-items-center"
-    style="width: fit-content">
-    <div class="form-check">
-        <input
-            class="form-check-input"
-            type="radio"
-            name="selectSong"
-            [id]="song.id"
-            (change)="onSelectSong(song.id)" />
+<div style="width: fit-content" #songElement is-selected="false" [id]="'song_' + song.id" (click)="onSelectSong(song.id)">
+    <div class="canvas-container">
+        <canvas [id]="'canvas_' + song.id"></canvas>
     </div>
-    <div class="image-container px-1">
-        <img class="rounded-3" [src]="song.photoPath" />
-    </div>
-    <div class="d-flex flex-column px-2">
-        <div class="mb-1">
-            {{song.name}}
+    <div class="content-container">
+        <div class="image-container px-1">
+            <img class="rounded-3" [src]="song.photoPath" />
         </div>
-        <audio
-            class="my-2"
-            controls
-            [src]="song.musicPath"></audio>
+        <div class="d-flex flex-column px-2">
+            <div class="mb-1">
+                {{song.name}}
+            </div>
+            <audio
+                class="my-2"
+                controls
+                [src]="song.musicPath"></audio>
+        </div>
     </div>
-</li>
+</div>

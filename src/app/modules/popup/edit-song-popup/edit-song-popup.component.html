@@ -7,6 +7,7 @@
         <input class="form-control"
                id="songName"
                formControlName="name"
+               (change)="markFormAsTouched()"
                aria-describedby="songNameInvalid">
         <div class="form-text" id="songNameInvalid" *ngIf="songNameIsInvalid">
             Title is invalid. Minimum length is 5 symbols

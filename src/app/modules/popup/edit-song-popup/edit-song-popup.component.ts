@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {BaseSongPopup, SongForm} from "../base-song-popup/base-song-popup";
 import {SongApiService} from "../../../services/song/song-api.service";
@@ -8,6 +8,8 @@ import {FormControl, FormGroup} from "@angular/forms";
 import {entityNameValidator} from "../../../validators/entity-name.validator";
 import {audioFileValidator} from "../../../validators/file.validator";
 import {IUpdateSongForm} from "../../../interfaces/forms/IUpdateSongForm";
+import {SongStateService} from "../../../services/song/song-state.service";
+import LoadingStatus from "../../../enums/LoadingStatus";
 
 @Component({
   selector: 'app-edit-song-popup',
@@ -20,6 +22,7 @@ export class EditSongPopupComponent extends BaseSongPopup {
         @Inject(MAT_DIALOG_DATA) private readonly songId: string,
         private readonly songApiService: SongApiService,
         private readonly eventService: EventService,
+        private readonly songStateService: SongStateService,
     ) {
         super(modalRef);
     }
@@ -27,12 +30,13 @@ export class EditSongPopupComponent extends BaseSongPopup {
     protected override buildForm(): FormGroup<SongForm> {
         const nameField = new FormControl<string | null>(null, {
             validators: entityNameValidator(),
-            updateOn: 'change',
+            updateOn: 'submit',
             nonNullable: false
         });
+
         const audioField = new FormControl<File | null>(null, {
             validators: audioFileValidator(),
-            updateOn: undefined,
+            updateOn: 'submit',
             nonNullable: false
         })
         this._form = new FormGroup<IUpdateSongForm>({
@@ -44,11 +48,16 @@ export class EditSongPopupComponent extends BaseSongPopup {
 
     protected override submitForm() {
         const notifyEventService = () => this.eventService.songsListChanged();
+        const setSelectedSongInitialStatus = () => this.songStateService.selectedSongStatus = LoadingStatus.initial;
+        this.songStateService.selectedSongStatus = LoadingStatus.loading;
         concat(
             this.tryUpdateName(this.songId),
             this.tryUpdateAudio(this.songId)
         )
-            .pipe(tap(notifyEventService))
+            .pipe(
+                tap(notifyEventService),
+                tap(setSelectedSongInitialStatus)
+            )
             .subscribe();
     }
 
@@ -96,5 +105,10 @@ export class EditSongPopupComponent extends BaseSongPopup {
         return this.songNameIsInvalid
             || this.songFileIsInvalid
             || this._form.untouched;
+    }
+
+    public markFormAsTouched(): void {
+        if (this._form.untouched)
+            this._form.markAsTouched({onlySelf: true});
     }
 }

@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, tap} from "rxjs";
+import {Injectable, Signal, signal} from '@angular/core';
+import {tap} from "rxjs";
 import SongModel from "../../models/SongModel";
 import {SongApiService} from "./song-api.service";
 import {EventService} from "../event.service";
@@ -20,53 +20,44 @@ export class SongStateService {
     }
 
     private updateSongsList = (): void => {
-        const setSongsList = (songs: SongModel[]) => this.songsList = songs;
-        const setLoadedStatus = () => this.songsListStatus = LoadingStatus.loaded;
-
-        this.setLoadingStatus();
-        this.removeSelectedSong();
+        this.setLoadingSongsListStatus();
+        this.setSelectedSong(null);
+        this.setInitialSelectedSongStatus();
         this.songApiService
             .getAlbumSongs()
             .pipe(
-                tap(setSongsList), // обновляем состояние и помещаем в него загруженные песни
-                tap(setLoadedStatus) // после запроса ставим статус loaded
+                tap(this.setSongsList), // обновляем состояние и помещаем в него загруженные песни
+                tap(this.setLoadedSongsListStatus) // после запроса ставим статус loaded
             )
             .subscribe();
     }
 
-    private setLoadingStatus(): void {
-        this.songsListStatus = LoadingStatus.loading;
-    }
-
-    private removeSelectedSong(): void {
-        this.selectedSongSource.next(null);
-    }
-
     /**
-     * Состояние загрузки списка песен
+     * Состояние загрузки списка треков
      */
-    private songsListStatusSource = new BehaviorSubject<LoadingStatus>(LoadingStatus.initial);
-    private _songsListStatus$ = this.songsListStatusSource.asObservable();
+    private _songsListStatus = signal<LoadingStatus>(LoadingStatus.initial);
     set songsListStatus(status: LoadingStatus) {
-        this.songsListStatusSource.next(status);
+        this._songsListStatus.set(status);
     }
-
-    get songsListStatus$(): Observable<LoadingStatus> {
-        return this._songsListStatus$;
+    get songsListStatus(): Signal<LoadingStatus> {
+        return this._songsListStatus;
     }
+    private setLoadingSongsListStatus = () => this.songsListStatus = LoadingStatus.loading;
+    private setLoadedSongsListStatus = () => this.songsListStatus = LoadingStatus.loaded;
 
     /**
-     * Массив песен
+     * Список треков
      */
-    private songsListSource = new BehaviorSubject<SongModel[]>([]);
-    private _songsList$ = this.songsListSource.asObservable();
-    set songsList(songs: SongModel[]) {
-        this.songsListSource.next(songs);
+    private _songsList = signal<SongModel[]>([]);
+    set songsList(songsList: SongModel[]) {
+        this._songsList.set(songsList);
     }
 
-    get songsList$(): Observable<SongModel[]> {
-        return this._songsList$;
+    get songsList(): Signal<SongModel[]> {
+        return this._songsList;
     }
+
+    private setSongsList = (songs: SongModel[]) => this.songsList = songs;
 
     public loadSongsList(): void {
         this.updateSongsList();
@@ -75,36 +66,69 @@ export class SongStateService {
     /**
      * Выбранная песня
      */
-    private selectedSongSource = new BehaviorSubject<ExtendedSongModel|null>(null);
-    private _selectedSong$ = new Observable<ExtendedSongModel>;
-    set selectedSong(selectedSongId: string) {
-        const setSong = (song: ExtendedSongModel) => this.selectedSongSource.next(song);
-        const setLoadedStatus = () => this.selectedSongStatusSource.next(LoadingStatus.loaded);
+    private _selectedSong = signal<ExtendedSongModel | null>(null);
+    set selectedSongId(selectedSongId: string | null) {
+        if (selectedSongId === null) {
+            this.unsetSelectedSong();
+        } else {
+            this.loadSelectedSong(selectedSongId);
+        }
+    }
 
-        this.selectedSongStatus = LoadingStatus.loading;
+    private unsetSelectedSong(): void {
+        this.setSelectedSong(null);
+        this.setLoadedSelectedSongStatus();
+    }
+
+    private loadSelectedSong(selectedSongId: string): void {
+        this.setLoadingSelectedSongStatus();
         this.songApiService
             .getSong(selectedSongId)
             .pipe(
-                tap(setSong),
-                tap(setLoadedStatus)
+                tap(this.setSelectedSong),
+                tap(this.setLoadedSelectedSongStatus)
             )
             .subscribe();
     }
 
-    get selectedSong$(): Observable<ExtendedSongModel|null> {
-        return this._selectedSong$;
+    private setSelectedSong = (song: ExtendedSongModel | null) => {
+        this._selectedSong.set(song);
+    }
+
+    get selectedSong(): Signal<ExtendedSongModel | null> {
+        return this._selectedSong;
     }
 
     /**
      * Состояние загрузки выбранной песни
      */
-    private selectedSongStatusSource = new BehaviorSubject<LoadingStatus>(LoadingStatus.initial);
-    private _selectedSongStatus$ = this.selectedSongStatusSource.asObservable();
+    private _selectedSongStatus = signal<LoadingStatus>(LoadingStatus.initial);
     set selectedSongStatus(status: LoadingStatus) {
-        this.selectedSongStatusSource.next(status);
+        this._selectedSongStatus.set(status);
     }
 
-    get selectedSongStatus$(): Observable<LoadingStatus> {
-        return this._selectedSongStatus$;
+    get selectedSongStatus(): Signal<LoadingStatus> {
+        return this._selectedSongStatus;
+    }
+
+    public setLoadedSelectedSongStatus = () =>
+        this.selectedSongStatus = LoadingStatus.loaded;
+
+    public setLoadingSelectedSongStatus = () =>
+        this.selectedSongStatus = LoadingStatus.loading;
+
+    public setInitialSelectedSongStatus = () =>
+        this.selectedSongStatus = LoadingStatus.initial;
+
+    /**
+     * Состояние запроса на создание песни
+     */
+    private _createSongStatus = signal<LoadingStatus>(LoadingStatus.initial);
+    set createSongStatus(status: LoadingStatus) {
+        this._createSongStatus.set(status);
+    }
+
+    get createSongStatus(): Signal<LoadingStatus> {
+        return this._createSongStatus;
     }
 }

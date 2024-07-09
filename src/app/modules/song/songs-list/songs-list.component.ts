@@ -1,5 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
+import {Component, computed, OnInit, signal, Signal} from '@angular/core';
 import SongModel from "../../../models/SongModel";
 import {SongStateService} from "../../../services/song/song-state.service";
 import LoadingStatus from "../../../enums/LoadingStatus";
@@ -12,31 +11,19 @@ import {MatDialog} from "@angular/material/dialog";
     styleUrl: './songs-list.component.css'
 })
 export class SongsListComponent implements OnInit {
-    private _songs: SongModel[] = [];
-    public _status: LoadingStatus = LoadingStatus.initial;
+    private _songsList: Signal<SongModel[]> = signal([]);
+    private _songsListStatus: Signal<LoadingStatus> = signal(LoadingStatus.initial);
+    private _createSongStatus: Signal<LoadingStatus> = signal(LoadingStatus.initial);
     constructor(
         private readonly songStateService: SongStateService,
         private readonly matDialog: MatDialog
     ) {}
 
     ngOnInit(): void {
-        this.subscribeOnSongsList();
-        this.subscribeOnSongsListStatus();
+        this._songsList = this.songStateService.songsList;
+        this._songsListStatus = this.songStateService.songsListStatus;
+        this._createSongStatus = this.songStateService.createSongStatus;
         this.songStateService.loadSongsList();
-    }
-
-    private subscribeOnSongsList(): void {
-        const setSongsList = (songs: SongModel[]) => this._songs = songs;
-        this.songStateService
-            .songsList$
-            .subscribe(setSongsList);
-    }
-
-    private subscribeOnSongsListStatus(): void {
-        const setSongsListStatus = (status: LoadingStatus) => this._status = status;
-        this.songStateService
-            .songsListStatus$
-            .subscribe(setSongsListStatus);
     }
 
     public openCreateSongModal($event: Event): void {
@@ -44,13 +31,17 @@ export class SongsListComponent implements OnInit {
         this.matDialog.open(CreateSongPopupComponent);
     }
 
-    get songs(): SongModel[] {
-        return this._songs;
+    get songsList(): SongModel[] {
+        return this._songsList() as SongModel[];
     }
 
-    get status(): LoadingStatus {
-        return this._status;
+    get songsListStatus(): LoadingStatus {
+        return this._songsListStatus();
     }
 
-    protected readonly LoadingStatus = LoadingStatus;
+    get createSongStatus(): LoadingStatus {
+        return this._createSongStatus();
+    }
+
+    readonly LoadingStatus = LoadingStatus;
 }

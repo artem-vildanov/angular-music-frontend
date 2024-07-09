@@ -1,11 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, effect, OnInit, Signal, signal} from '@angular/core';
 import ExtendedSongModel from "../../../models/ExtendedSongModel";
 import LoadingStatus from "../../../enums/LoadingStatus";
 import {SongApiService} from "../../../services/song/song-api.service";
 import {SongStateService} from "../../../services/song/song-state.service";
 import {EditSongPopupComponent} from "../../popup/edit-song-popup/edit-song-popup.component";
 import {MatDialog} from "@angular/material/dialog";
-import {CreateSongPopupComponent} from "../../popup/create-song-popup/create-song-popup.component";
 
 @Component({
   selector: 'app-song-detail',
@@ -13,8 +12,8 @@ import {CreateSongPopupComponent} from "../../popup/create-song-popup/create-son
   styleUrl: './song-detail.component.css'
 })
 export class SongDetailComponent implements OnInit {
-    private _song: ExtendedSongModel|null = null;
-    private _status: LoadingStatus = LoadingStatus.initial;
+    private _selectedSong: Signal<ExtendedSongModel | null> = signal(null);
+    private _selectedSongStatus: Signal<LoadingStatus> = signal(LoadingStatus.initial);
 
     constructor(
         private readonly songApiService: SongApiService,
@@ -23,58 +22,33 @@ export class SongDetailComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-    }
-
-    private subscribeSelectedSong(): void {
-        const showDetailSong = (songId: string|null): void => {
-            if (songId) {
-                this.loadDetailSong(songId);
-            } else {
-                this.unsetDetailSong();
-            }
-        }
-
-        this.songStateService
-            .selectedSongId$
-            .subscribe(showDetailSong);
-    }
-
-    private subscribeSelectedSongStatus(): void {
-        const setSelectedSongStatus = (status: LoadingStatus) => this._status = status;
-
-    }
-
-    private loadDetailSong(songId: string): void {
-        const setSong = (newSong: ExtendedSongModel): void => {
-            this._song = newSong;
-            this.status = LoadingStatus.loaded;
-        }
-        this.status = LoadingStatus.loading;
-        this.songApiService
-            .getSong(songId)
-            .subscribe(setSong);
-    }
-
-    private unsetDetailSong(): void {
-        this.status = LoadingStatus.initial;
+        this._selectedSong = this.songStateService.selectedSong;
+        this._selectedSongStatus = this.songStateService.selectedSongStatus;
     }
 
     public openEditSongModal(): void {
         this.matDialog.open(
             EditSongPopupComponent,
-            { data:  this._song!.id }
+            { data:  this.song!.id }
         );
     }
 
     public deleteSong(): void {
+        this.songStateService.setLoadingSelectedSongStatus();
         this.songApiService
-            .deleteSong(this._song!.id)
-            .subscribe();
+            .deleteSong(this.song!.id)
+            .subscribe(
+                this.songStateService.setLoadedSelectedSongStatus
+            );
     }
 
     get song(): ExtendedSongModel|null {
-        return this._song;
+        return this._selectedSong();
     }
 
-    protected readonly SongDetailStatus = LoadingStatus;
+    get status(): LoadingStatus {
+        return this._selectedSongStatus();
+    }
+
+    public readonly SongDetailStatus = LoadingStatus;
 }

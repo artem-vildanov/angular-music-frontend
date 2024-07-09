@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
-import {CommonModule, NgFor, NgOptimizedImage} from '@angular/common';
+import {CommonModule, NgFor, NgIf, NgOptimizedImage, NgSwitch, NgSwitchCase} from '@angular/common';
 import { SongsListComponent } from './songs-list/songs-list.component';
-import { CreateSongComponent } from './create-song/create-song.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import { SongDetailComponent } from './song-detail/song-detail.component';
 import {ShowIfEmptyDirective} from "../../directives/show-if-empty.directive";
@@ -15,7 +14,6 @@ import {MatDialogModule} from "@angular/material/dialog";
 @NgModule({
     declarations: [
         SongsListComponent,
-        CreateSongComponent,
         SongDetailComponent,
         SongBaseComponent,
         ShowIfEmptyDirective,

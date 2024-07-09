@@ -10,7 +10,7 @@ import {EventService} from "../event.service";
     providedIn: 'root'
 })
 export class SongApiService {
-    private baseUrl = `${environment.apiUrl}/albums/667aebc1544ce27fc405e1a6/songs`;
+    private baseUrl = `${environment.apiUrl}/albums/668b97fe1f419fa7a50c6dd4/songs`;
     constructor(
         private readonly http: HttpClient,
         private readonly eventService: EventService

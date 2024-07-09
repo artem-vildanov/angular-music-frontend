@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {BaseSongPopup, SongForm} from "../base-song-popup/base-song-popup";
 import {FormControl, FormGroup} from "@angular/forms";
 import {SongApiService} from "../../../services/song/song-api.service";
@@ -6,6 +6,8 @@ import {entityNameValidator} from "../../../validators/entity-name.validator";
 import {audioFileValidator} from "../../../validators/file.validator";
 import {ICreateSongForm} from "../../../interfaces/forms/ICreateSongForm";
 import {MatDialogRef} from "@angular/material/dialog";
+import {SongStateService} from "../../../services/song/song-state.service";
+import LoadingStatus from "../../../enums/LoadingStatus";
 
 @Component({
   selector: 'app-create-song-popup',
@@ -14,6 +16,7 @@ import {MatDialogRef} from "@angular/material/dialog";
 })
 export class CreateSongPopupComponent extends BaseSongPopup {
     constructor(
+        private readonly songStateService: SongStateService,
         private readonly songApiService: SongApiService,
         modalRef: MatDialogRef<CreateSongPopupComponent>,
     ) {
@@ -29,7 +32,7 @@ export class CreateSongPopupComponent extends BaseSongPopup {
         const audioField = new FormControl<File | null>(null, {
             validators: audioFileValidator(),
             updateOn: 'change',
-            nonNullable: true
+            nonNullable: false
         })
         this._form = new FormGroup<ICreateSongForm>({
             name: nameField,
@@ -39,10 +42,12 @@ export class CreateSongPopupComponent extends BaseSongPopup {
     }
 
     protected submitForm(): void {
+        const setCreateSongStatusInitial = () => this.songStateService.createSongStatus = LoadingStatus.initial;
+        this.songStateService.createSongStatus = LoadingStatus.loading;
         const formData: FormData = this.buildFormData();
         this.songApiService
             .createSong(formData)
-            .subscribe();
+            .subscribe(setCreateSongStatusInitial);
     }
 
     private buildFormData(): FormData {

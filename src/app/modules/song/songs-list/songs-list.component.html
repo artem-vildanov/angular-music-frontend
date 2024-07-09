@@ -1,26 +1,35 @@
 <div class="card songs-list">
     <div class="card-header d-flex flex-row justify-content-between align-items-center">
         <div>Album songs</div>
-        <button class="btn btn-primary" (click)="openCreateSongModal($event)">Create new song</button>
+        <button class="btn btn-primary"
+                (click)="openCreateSongModal($event)"
+                *ngIf="createSongStatus === LoadingStatus.initial">
+            Create new song</button>
+        <button class="btn btn-primary"
+                disabled
+                *ngIf="createSongStatus === LoadingStatus.loading">
+            Creating song...</button>
     </div>
-    <ng-container [ngSwitch]="status">
+    <ng-container [ngSwitch]="songsListStatus">
         <ng-container *ngSwitchCase="LoadingStatus.loading">
             <div class="card-body songs-list-overlay">
                 <app-loading-spinner></app-loading-spinner>
             </div>
         </ng-container>
         <ng-container *ngSwitchCase="LoadingStatus.loaded">
-            <ng-container *ngIf="songs.length === 0">
+            <ng-container *ngIf="songsList.length === 0">
                 <div class="card-body songs-list-overlay">
                     There is nothing yet.
                 </div>
             </ng-container>
-            <ul class="list-group list-group-flush" >
-                <app-songs-list-item class="list-group-item p-3"
-                                     *ngFor="let song of songs"
-                                     [song]="song">
-                </app-songs-list-item>
-            </ul>
+            <ng-container *ngIf="songsList.length !== 0">
+                <div id="songsList" class="list-group list-group-flush" >
+                    <app-songs-list-item class="list-group-item p-3"
+                                         *ngFor="let song of songsList"
+                                         [_song]="song">
+                    </app-songs-list-item>
+                </div>
+            </ng-container>
         </ng-container>
     </ng-container>
 </div>

@@ -1,11 +1,11 @@
 import {IUpdateSongForm} from "../../../interfaces/forms/IUpdateSongForm";
 import {ICreateSongForm} from "../../../interfaces/forms/ICreateSongForm";
-import {FormControl, FormGroup} from "@angular/forms";
-import {entityNameValidator} from "../../../validators/entity-name.validator";
-import {audioFileValidator} from "../../../validators/file.validator";
+import {FormGroup} from "@angular/forms";
 import {MatDialogRef} from "@angular/material/dialog";
 import {EditSongPopupComponent} from "../edit-song-popup/edit-song-popup.component";
 import {CreateSongPopupComponent} from "../create-song-popup/create-song-popup.component";
+import LoadingStatus from "../../../enums/LoadingStatus";
+import {Observable} from "rxjs";
 
 export type SongForm = IUpdateSongForm | ICreateSongForm;
 
@@ -16,13 +16,12 @@ export abstract class BaseSongPopup {
     }
 
     protected abstract buildForm(): FormGroup<SongForm>;
+    protected abstract submitForm(): void;
 
     public onSubmit(): void {
         this.submitForm();
         this.closeModal();
     }
-
-    protected abstract submitForm(): void;
 
     public onClose($event: Event): void {
         $event.preventDefault();
@@ -49,7 +48,7 @@ export abstract class BaseSongPopup {
     }
 
     get songNameIsInvalid(): boolean {
-        const nameIsInvalid: boolean = this._form.get('name')!.invalid;
+        const nameIsInvalid: boolean = this._form.controls.name!.invalid; // not nullable control
         const nameIsTouched: boolean = this._form.get('name')!.touched;
         return nameIsInvalid && nameIsTouched;
     }
