@@ -4,6 +4,7 @@ import { EditSongPopupComponent } from './edit-song-popup/edit-song-popup.compon
 import {MatDialogModule} from "@angular/material/dialog";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { CreateSongPopupComponent } from './create-song-popup/create-song-popup.component';
+import {ControlsModule} from "../controls/controls.module";
 
 @NgModule({
     declarations: [
@@ -15,6 +16,7 @@ import { CreateSongPopupComponent } from './create-song-popup/create-song-popup.
         MatDialogModule,
         ReactiveFormsModule,
         FormsModule,
+        ControlsModule,
     ],
     providers: [
     ]

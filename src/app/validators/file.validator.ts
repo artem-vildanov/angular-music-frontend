@@ -1,4 +1,5 @@
 import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {max} from "rxjs";
 
 export function audioFileValidator(): ValidatorFn {
     const maximumAudioSize = 10485760; // 10 Mb
@@ -13,23 +14,32 @@ export function imageFileValidator(): ValidatorFn {
 function fileValidator(maxSize: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
         const file = control.value as File;
+        const errors: ValidationErrors = {};
 
         if (file === null)
-            return getError();
+            return requiredError();
 
-        if (isSizeInvalid(file, maxSize))
-            return getError(file.name);
+        if (file.size > maxSize)
+            return invalidSizeError(file.size, maxSize);
 
         return null;
     };
 }
 
-function isSizeInvalid(file: File, maxSize: number): boolean {
-    return file.size > maxSize;
+function invalidSizeError(actualSize: number, maxSize: number): ValidationErrors {
+    return {
+        size : {
+            actualSize: actualSize,
+            maxSize: maxSize
+        }
+    }
 }
 
-function getError(fileName: string = 'undefinedName'): ValidationErrors {
-    return { fileName: fileName };
+function requiredError(): ValidationErrors {
+    return {
+        required: true
+    }
 }
+
 
 

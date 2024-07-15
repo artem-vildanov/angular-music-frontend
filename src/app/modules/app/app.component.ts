@@ -1,23 +1,27 @@
-import {Component, OnInit} from '@angular/core';
-import {AuthApiService} from "../../services/auth/auth-api.service";
-import {AccountModel} from "../../models/AccountModel";
-import {AuthStateService} from "../../services/auth/auth-state.service";
-import {AuthStateStatus} from "../../enums/AuthStateStatus";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { AuthApiService } from "../../services/auth/auth-api.service";
+import { AccountModel } from "../../models/AccountModel";
+import { AuthStateService } from "../../services/auth/auth-state.service";
+import { AuthStateStatus } from "../../enums/AuthStateStatus";
+import { Router } from "@angular/router";
+import { EventService } from "../../services/event.service";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
     private currentAuthState: AuthStateStatus = AuthStateStatus.loading;
 
     constructor(
         private readonly authApiService: AuthApiService,
         private readonly authStateService: AuthStateService,
-        private readonly router: Router
-    ) {}
+        private readonly eventService: EventService,
+        private readonly router: Router,
+    ) {
+        // this.eventService.tryInitSharedWorker();
+    }
 
     get authStateIsAuthenticated(): boolean {
         return this.currentAuthState === AuthStateStatus.authenticated;
@@ -38,6 +42,7 @@ export class AppComponent implements OnInit{
         } else {
             this.setAuthStateUnauthorized();
         }
+
     }
 
     private subscribeAuthState(): void {

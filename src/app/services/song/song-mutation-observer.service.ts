@@ -1,11 +1,11 @@
-import {SongCanvasManager} from "./song-canvas.service";
+import {SongCanvasService} from "./song-canvas.service";
 
-export class SongMutationObserverManager {
+export class SongMutationObserverService {
     private songElement!: HTMLElement;
-    private songCanvasManager!: SongCanvasManager
+    private songCanvasManager!: SongCanvasService
 
     constructor(songElement: HTMLDivElement, canvasElement: HTMLCanvasElement) {
-        this.songCanvasManager = new SongCanvasManager(canvasElement);
+        this.songCanvasManager = new SongCanvasService(canvasElement);
         this.songElement = songElement;
         const observer = this.makeMutationObserver();
         observer.observe(songElement, { attributes: true });
@@ -33,7 +33,6 @@ export class SongMutationObserverManager {
         if (isSelected === 'true') {
             this.songCanvasManager.fillCanvas();
         } else if (isSelected === 'false') {
-            console.log(`${this.songElement.id} unselected`);
             this.songCanvasManager.clearCanvas();
         }
     }

@@ -1,0 +1,16 @@
+<label class="form-label" for="songFile">Upload Audio:</label>
+<input class="form-control"
+       id="songFile"
+       type="file"
+       (change)="onFileChange($event)"
+       [(ngModel)]="value"
+       #audioControl="ngModel"
+       required>
+@if (audioControl.invalid && audioControl.touched) {
+    <div *ngIf="audioControl.errors?.['size']" class="form-text">
+        Audio file is invalid. Max size is 10 Mb
+    </div>
+    <div *ngIf="audioControl.errors?.['required']" class="form-text">
+        Audio file is required
+    </div>
+}

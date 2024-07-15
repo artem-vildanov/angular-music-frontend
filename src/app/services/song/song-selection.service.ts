@@ -1,4 +1,4 @@
-export class SongSelectionManager {
+export class SongSelectionService {
     private songElement!: HTMLElement;
     constructor(songElement: HTMLElement) {
         this.songElement = songElement;

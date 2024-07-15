@@ -13,9 +13,9 @@ import {
 import SongModel from "../../../models/SongModel";
 import {SongStateService} from "../../../services/song/song-state.service";
 import ExtendedSongModel from "../../../models/ExtendedSongModel";
-import {SongCanvasManager} from "../../../services/song/song-canvas.service";
-import {SongSelectionManager} from "../../../services/song/song-selection.service";
-import {SongMutationObserverManager} from "../../../services/song/song-mutation-observer.service";
+import {SongCanvasService} from "../../../services/song/song-canvas.service";
+import {SongSelectionService} from "../../../services/song/song-selection.service";
+import {SongMutationObserverService} from "../../../services/song/song-mutation-observer.service";
 
 @Component({
     selector: 'app-songs-list-item',
@@ -25,9 +25,9 @@ import {SongMutationObserverManager} from "../../../services/song/song-mutation-
 export class SongsListItemComponent implements AfterViewInit, OnInit {
     // @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
     // @ViewChild('songElement') songElementRef!: ElementRef<HTMLDivElement>;
-    private songCanvasManager!: SongCanvasManager;
-    private songSelectionManager!: SongSelectionManager;
-    private songMutationObserverManager!: SongMutationObserverManager;
+    private songCanvasManager!: SongCanvasService;
+    private songSelectionManager!: SongSelectionService;
+    private songMutationObserverManager!: SongMutationObserverService;
     private canvasElement!: HTMLCanvasElement;
     public songElement!: HTMLDivElement;
     @Input() _song!: SongModel;
@@ -43,9 +43,9 @@ export class SongsListItemComponent implements AfterViewInit, OnInit {
 
     ngAfterViewInit(): void {
         this.initElements();
-        this.songCanvasManager = new SongCanvasManager(this.canvasElement);
-        this.songSelectionManager = new SongSelectionManager(this.songElement);
-        this.songMutationObserverManager = new SongMutationObserverManager(this.songElement, this.canvasElement);
+        this.songCanvasManager = new SongCanvasService(this.canvasElement);
+        this.songSelectionManager = new SongSelectionService(this.songElement);
+        this.songMutationObserverManager = new SongMutationObserverService(this.songElement, this.canvasElement);
     }
 
     private initElements(): void {

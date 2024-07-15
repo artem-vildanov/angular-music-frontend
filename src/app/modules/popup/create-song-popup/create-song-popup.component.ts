@@ -8,6 +8,7 @@ import {ICreateSongForm} from "../../../interfaces/forms/ICreateSongForm";
 import {MatDialogRef} from "@angular/material/dialog";
 import {SongStateService} from "../../../services/song/song-state.service";
 import LoadingStatus from "../../../enums/LoadingStatus";
+import {ControlFactoryService} from "../../../services/control-factory.service";
 
 @Component({
   selector: 'app-create-song-popup',
@@ -19,24 +20,23 @@ export class CreateSongPopupComponent extends BaseSongPopup {
         private readonly songStateService: SongStateService,
         private readonly songApiService: SongApiService,
         modalRef: MatDialogRef<CreateSongPopupComponent>,
+        private readonly controlFactory: ControlFactoryService,
     ) {
         super(modalRef);
     }
 
     protected buildForm(): FormGroup<SongForm> {
-        const nameField = new FormControl<string>('', {
-            validators: entityNameValidator(),
-            updateOn: 'change',
-            nonNullable: true
-        });
-        const audioField = new FormControl<File | null>(null, {
-            validators: audioFileValidator(),
-            updateOn: 'change',
-            nonNullable: false
-        })
         this._form = new FormGroup<ICreateSongForm>({
-            name: nameField,
-            audio: audioField
+            name:  new FormControl<string>('', {
+                validators: entityNameValidator(),
+                updateOn: 'change',
+                nonNullable: true
+            }),
+            audio: new FormControl<File | null>(null, {
+                validators: audioFileValidator(),
+                updateOn: 'change',
+                nonNullable: false
+            })
         }) as FormGroup<SongForm>;
         return this._form
     }
