@@ -1,61 +1,34 @@
-import {Component} from '@angular/core';
-import {BaseSongPopup, SongForm} from "../base-song-popup/base-song-popup";
-import {FormControl, FormGroup} from "@angular/forms";
-import {SongApiService} from "../../../services/song/song-api.service";
-import {entityNameValidator} from "../../../validators/entity-name.validator";
-import {audioFileValidator} from "../../../validators/file.validator";
-import {ICreateSongForm} from "../../../interfaces/forms/ICreateSongForm";
-import {MatDialogRef} from "@angular/material/dialog";
-import {SongStateService} from "../../../services/song/song-state.service";
+import { Component } from '@angular/core';
+import { BaseSongPopup } from "../base-song-popup/base-song-popup";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { SongApiService } from "../../../services/song/song-api.service";
+import { entityNameValidator } from "../../../validators/entity-name.validator";
+import { MatDialogRef } from "@angular/material/dialog";
+import { SongStateService } from "../../../services/song/song-state.service";
 import LoadingStatus from "../../../enums/LoadingStatus";
-import {ControlFactoryService} from "../../../services/control-factory.service";
+import { ISongForm } from '../../../interfaces/forms/ISongForm';
 
 @Component({
-  selector: 'app-create-song-popup',
-  templateUrl: './create-song-popup.component.html',
-  styleUrl: './create-song-popup.component.css'
+    selector: 'app-create-song-popup',
+    templateUrl: './create-song-popup.component.html',
+    styleUrl: './create-song-popup.component.css'
 })
 export class CreateSongPopupComponent extends BaseSongPopup {
     constructor(
         private readonly songStateService: SongStateService,
         private readonly songApiService: SongApiService,
         modalRef: MatDialogRef<CreateSongPopupComponent>,
-        private readonly controlFactory: ControlFactoryService,
     ) {
         super(modalRef);
     }
 
-    protected buildForm(): FormGroup<SongForm> {
-        this._form = new FormGroup<ICreateSongForm>({
-            name:  new FormControl<string>('', {
-                validators: entityNameValidator(),
-                updateOn: 'change',
-                nonNullable: true
-            }),
-            audio: new FormControl<File | null>(null, {
-                validators: audioFileValidator(),
-                updateOn: 'change',
-                nonNullable: false
-            })
-        }) as FormGroup<SongForm>;
-        return this._form
-    }
+    private setCreateSongStatusInitial = () => this.songStateService.createSongStatus = LoadingStatus.initial;
 
     protected submitForm(): void {
-        const setCreateSongStatusInitial = () => this.songStateService.createSongStatus = LoadingStatus.initial;
         this.songStateService.createSongStatus = LoadingStatus.loading;
         const formData: FormData = this.buildFormData();
         this.songApiService
             .createSong(formData)
-            .subscribe(setCreateSongStatusInitial);
-    }
-
-    private buildFormData(): FormData {
-        const songName = this._form.get('name')!.value as string;
-        const songFile = this._form.get('audio')!.value!;
-        const formData: FormData = new FormData();
-        formData.append('name', songName);
-        formData.append('audio', songFile);
-        return formData;
+            .subscribe(this.setCreateSongStatusInitial);
     }
 }

@@ -1,15 +1,15 @@
-import {Component, effect, OnInit, Signal, signal} from '@angular/core';
+import { Component, OnInit, Signal, signal } from '@angular/core';
 import ExtendedSongModel from "../../../models/ExtendedSongModel";
 import LoadingStatus from "../../../enums/LoadingStatus";
-import {SongApiService} from "../../../services/song/song-api.service";
-import {SongStateService} from "../../../services/song/song-state.service";
-import {EditSongPopupComponent} from "../../popup/edit-song-popup/edit-song-popup.component";
-import {MatDialog} from "@angular/material/dialog";
+import { SongApiService } from "../../../services/song/song-api.service";
+import { SongStateService } from "../../../services/song/song-state.service";
+import { EditSongPopupComponent } from "../../popup/edit-song-popup/edit-song-popup.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
-  selector: 'app-song-detail',
-  templateUrl: './song-detail.component.html',
-  styleUrl: './song-detail.component.css'
+    selector: 'app-song-detail',
+    templateUrl: './song-detail.component.html',
+    styleUrl: './song-detail.component.css'
 })
 export class SongDetailComponent implements OnInit {
     private _selectedSong: Signal<ExtendedSongModel | null> = signal(null);
@@ -19,7 +19,7 @@ export class SongDetailComponent implements OnInit {
         private readonly songApiService: SongApiService,
         private readonly songStateService: SongStateService,
         private readonly matDialog: MatDialog,
-    ) {}
+    ) { }
 
     ngOnInit() {
         this._selectedSong = this.songStateService.selectedSong;
@@ -27,9 +27,14 @@ export class SongDetailComponent implements OnInit {
     }
 
     public openEditSongModal(): void {
+        const songData = {
+            id: this.song!.id,
+            name: this.song!.name,
+            audioId: this.song!.audioId
+        }
         this.matDialog.open(
             EditSongPopupComponent,
-            { data:  this.song!.id }
+            { data: songData }
         );
     }
 
@@ -42,7 +47,7 @@ export class SongDetailComponent implements OnInit {
             );
     }
 
-    get song(): ExtendedSongModel|null {
+    get song(): ExtendedSongModel | null {
         return this._selectedSong();
     }
 

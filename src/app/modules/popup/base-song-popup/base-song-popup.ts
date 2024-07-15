@@ -1,22 +1,41 @@
-import {IUpdateSongForm} from "../../../interfaces/forms/IUpdateSongForm";
-import {ICreateSongForm} from "../../../interfaces/forms/ICreateSongForm";
-import {FormGroup} from "@angular/forms";
-import {MatDialogRef} from "@angular/material/dialog";
-import {EditSongPopupComponent} from "../edit-song-popup/edit-song-popup.component";
-import {CreateSongPopupComponent} from "../create-song-popup/create-song-popup.component";
-import LoadingStatus from "../../../enums/LoadingStatus";
-import {Observable} from "rxjs";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { MatDialogRef } from "@angular/material/dialog";
+import { EditSongPopupComponent } from "../edit-song-popup/edit-song-popup.component";
+import { CreateSongPopupComponent } from "../create-song-popup/create-song-popup.component";
+import { ISongForm } from "../../../interfaces/forms/ISongForm";
+import { entityNameValidator } from "../../../validators/entity-name.validator";
 
-export type SongForm = IUpdateSongForm | ICreateSongForm;
 
 export abstract class BaseSongPopup {
-    protected _form: FormGroup<SongForm>;
+    protected _form: FormGroup<ISongForm>;
     protected constructor(private readonly modalRef: MatDialogRef<EditSongPopupComponent | CreateSongPopupComponent>) {
         this._form = this.buildForm();
     }
 
-    protected abstract buildForm(): FormGroup<SongForm>;
     protected abstract submitForm(): void;
+
+    private buildForm(): FormGroup<ISongForm> {
+        this._form = new FormGroup<ISongForm>({
+            name: new FormControl<string>('', {
+                validators: entityNameValidator(),
+                updateOn: 'change',
+                nonNullable: true
+            }),
+            audioId: new FormControl<string>('', {
+                validators: Validators.required,
+                updateOn: 'change',
+                nonNullable: true
+            })
+        }) as FormGroup<ISongForm>;
+        return this._form
+    }
+
+    protected buildFormData(): FormData {
+        const formData: FormData = new FormData();
+        formData.append('name', this._form.value.name!);
+        formData.append('audioId', this._form.value.audioId!);
+        return formData;
+    }
 
     public onSubmit(): void {
         this.submitForm();
@@ -63,7 +82,7 @@ export abstract class BaseSongPopup {
         return this._form.invalid;
     }
 
-    get form(): FormGroup<SongForm> {
+    get form(): FormGroup<ISongForm> {
         return this._form;
     }
 }
